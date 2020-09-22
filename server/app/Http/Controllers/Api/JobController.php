@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Job;
-use App\Http\Resources\JobsCollection;
-use App\Http\Resources\JobResource;
+use App\Http\Resources\Jobs\JobsCollection;
+use App\Http\Resources\Jobs\JobResource;
 
 class JobController extends Controller
 {

@@ -1,13 +1,14 @@
 <template>
-    <div class="hello">
-        <h1>{{ msg }}</h1>
+    <div class="flex justify-around items-center py-3 mb-3">
+        <router-link to="/">Home</router-link> |
+        <router-link to="/login">Login</router-link>
     </div>
 </template>
 <script>
 export default {
-    name: 'HelloWorld',
+    name: 'AppHeader',
     props: {
-        msg: String
+
     }
 };
 </script>
