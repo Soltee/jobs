@@ -24,6 +24,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/jobs', [JobController::class, 'index']);
+Route::get('/jobs/search', [JobController::class, 'search']);
 Route::middleware('auth:api')->group(function(){
 
 	Route::get('/test', function (Request $request) {

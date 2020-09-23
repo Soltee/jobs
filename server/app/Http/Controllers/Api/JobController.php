@@ -17,7 +17,7 @@ class JobController extends Controller
      */
     public function index()
     {
-        return new JobsCollection(Job::latest()->paginate(10));
+        return Job::latest()->with('user')->paginate(10);
     }
 
 
@@ -44,14 +44,21 @@ class JobController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Search Job
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Job $job)
+    public function search()
     {
-        //
+        $search  = request()->keyword;
+        if($search){
+            return Job::where('name', 'LIKE', '%'.$search.'%')
+                        ->with('user')
+                        ->paginate(10)                    
+                        ->appends(request()->query());
+
+        }
     }
 
     /**

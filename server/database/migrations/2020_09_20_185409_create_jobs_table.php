@@ -18,6 +18,9 @@ class CreateJobsTable extends Migration
             $table->foreignId('user_id')->constrained();
             $table->string('name');
             $table->text('description');
+            $table->integer('salary')->nullable();
+            $table->datetime('apply_before');
+            $table->string('tags')->nullable();
             $table->timestamps();
         });
     }

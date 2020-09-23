@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto max-w-screen-md min-h-screen flex justify-center items-center rounded shadow">
+    <div class="">
         <form @submit.prevent="loginUser">
             <div class="">
                 <div class="flex flex-col mb-6">
@@ -22,7 +22,17 @@
                 </div>
                 <div class="">
                     <button type="submit" class="w-full px-6 py-2 text-white bg-blue-600 hover:bg-blue-500 rounded ">
-                        <span v-if="loading">Loading ......</span>
+                        <div v-if="loading" class="sk-cube-grid">
+                            <div class="sk-cube sk-cube1"></div>
+                            <div class="sk-cube sk-cube2"></div>
+                            <div class="sk-cube sk-cube3"></div>
+                            <div class="sk-cube sk-cube4"></div>
+                            <div class="sk-cube sk-cube5"></div>
+                            <div class="sk-cube sk-cube6"></div>
+                            <div class="sk-cube sk-cube7"></div>
+                            <div class="sk-cube sk-cube8"></div>
+                            <div class="sk-cube sk-cube9"></div>
+                        </div>
                         <span v-else>Login</span>
                     </button>
                 </div>
@@ -31,11 +41,11 @@
     </div>
 </template>
 <script>
-// @ is an alias to /src
 import axios from 'axios';
+
 export default {
-    name: 'Login',
-    components: {
+    name: 'Signin',
+    props: {
 
     },
     data() {
@@ -85,3 +95,6 @@ export default {
     }
 };
 </script>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+</style>
