@@ -5,6 +5,19 @@
         </div>
         <form @submit.prevent="registerUser">
             <div class="">
+                <div v-if="loading" class="fixed inset-0 flex justify-center items-center">
+                    <div class=" sk-cube-grid">
+                        <div class="sk-cube sk-cube1"></div>
+                        <div class="sk-cube sk-cube2"></div>
+                        <div class="sk-cube sk-cube3"></div>
+                        <div class="sk-cube sk-cube4"></div>
+                        <div class="sk-cube sk-cube5"></div>
+                        <div class="sk-cube sk-cube6"></div>
+                        <div class="sk-cube sk-cube7"></div>
+                        <div class="sk-cube sk-cube8"></div>
+                        <div class="sk-cube sk-cube9"></div>
+                    </div>
+                </div>
                 <div class="flex flex-col mb-6">
                     <label for="name" class="font-md mb-2">Name</label>
                     <input class="px-3 py-2 rounded border border-gray-900" id="name" type="name" v-model="name" />
@@ -43,18 +56,7 @@
                 </div>
                 <div class="">
                     <button type="submit" class="w-full px-6 py-2 text-white bg-blue-600 hover:bg-blue-500 rounded ">
-                        <div v-if="loading" class="sk-cube-grid">
-                            <div class="sk-cube sk-cube1"></div>
-                            <div class="sk-cube sk-cube2"></div>
-                            <div class="sk-cube sk-cube3"></div>
-                            <div class="sk-cube sk-cube4"></div>
-                            <div class="sk-cube sk-cube5"></div>
-                            <div class="sk-cube sk-cube6"></div>
-                            <div class="sk-cube sk-cube7"></div>
-                            <div class="sk-cube sk-cube8"></div>
-                            <div class="sk-cube sk-cube9"></div>
-                        </div>
-                        <span v-else>Register</span>
+                        <span>Register</span>
                     </button>
                 </div>
             </div>
@@ -96,16 +98,17 @@ export default {
             }
             // this.$store.dispatch('getAndSetAuthenticatedUser');
             // this.loading = false;
-            axios.post(`http://127.0.0.1:8000/api/register`, data, {
+
+            axios.post(`http://localhost:8000/api/register`, data, {
                 headers: {
                     'Accept': 'application/json'
                 }
             }).then((res) => {
                 this.loading = false;
-                if (res.status === 200) {
-                    localStorage.setItem('_token', res.data._token);
-                    this.$store.dispatch('setToken');
+                if (res.status === 201) {
+                    localStorage.setItem('_token', res.data.token);
                     this.$store.dispatch('getAndSetAuthenticatedUser');
+                    this.$route.push('/');
                 }
             }).catch((err) => {
                 console.log(err);

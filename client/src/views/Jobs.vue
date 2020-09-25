@@ -1,5 +1,6 @@
 <template>
     <div class="relative">
+        <!-- search -->
         <div class="mb-8 ">
             <div class="flex  items-center">
                 <form @submit.prevent="">
@@ -31,12 +32,14 @@
                 </form>
             </div>
         </div>
+        <!-- Results -->
         <div class="relative">
             <div class="mb-2 flex justify-center items-center">
                 {{ total }} jobs found
                 <span v-if="search"> for {{ keyword }}.</span>
             </div>
             <div class="flex flex-col">
+                <!-- searched jobs -->
                 <div v-if="search">
                     <div v-for="(job, id) in jobsSearch" :key="id" @click="toogleJobModal(job)" class="shadow flex flex-col mb-10 px-3 py-3 hover:shadow-lg cursor-pointer">
                         <div class="flex flex-col mb-2">
@@ -55,6 +58,7 @@
                         </div>
                     </div>
                 </div>
+                <!-- Regular jobs without search -->
                 <div v-else>
                     <div v-for="(job, id) in jobs" :key="id" @click="toogleJobModal(job)" class="shadow flex flex-col mb-10 px-3 py-3 hover:shadow-lg cursor-pointer">
                         <div class="flex flex-col mb-2">
@@ -75,6 +79,7 @@
                 </div>
             </div>
             <div class="mt-3 flex flex-col items-center">
+                <!-- Loading && error message -->
                 <div v-if="loading" class="z-40 bg-gray-300 flex justify-center items-center">
                     <div class="sk-cube-grid">
                         <div class="sk-cube sk-cube1"></div>
@@ -228,8 +233,8 @@ export default {
 </script>
 <style>
 .sk-cube-grid {
-    width: 40px;
-    height: 40px;
+    width: 20px;
+    height: 20px;
     margin: 100px auto;
 }
 

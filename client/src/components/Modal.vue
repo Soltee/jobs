@@ -20,7 +20,7 @@
                 <!-- Job Details -->
                 <div v-if="tab === 'job'" class="flex flex-col">
                     <div class="flex flex-col mb-2">
-                        <span class="text-lg mt-2">Apply Before : {{ format(job.apply_before) }}</span>
+                        <span class="text-lg mt-2" :class="`{ (ended) ? 'text-red-600' : ''}`">{{ (ended) ? 'Deadline' : 'Apply Before ' }} : {{ format(job.apply_before) }}</span>
                     </div>
                     <div class="">
                         <p>
@@ -55,7 +55,11 @@ export default {
     data() {
         return {
             tab: 'job',
+            ended: false
         }
+    },
+    mounted() {
+        this.calculateExpiryDateForJob();
     },
     methods: {
         format(date) {
@@ -63,6 +67,11 @@ export default {
         },
         setTab(tab) {
             this.tab = tab;
+        },
+        calculateExpiryDateForJob() {
+            if (this.job.apply_before < this.format(new Date())) {
+                this.ended = true;
+            }
         }
     }
 };

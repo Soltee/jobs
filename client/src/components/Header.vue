@@ -29,12 +29,6 @@
                     </span>
                     <div class="mt-4 md:mt-0 flex flex-col md:flex-row justify-end md:items-center">
                         <span @click="modal = true;" class=" md:mb-0 px-2 py-2 border-b border-transparent hover:border-blue-500 w-auto cursor-pointer">Signin</span>
-                        <span class="hidden md:block">|</span>
-                        <span @click="menu = false;" :class="{ 'border-b border-blue-500' : ($route.name === 'Employer') }" class="mb-3 md:mb-0 px-2 py-2 border-b border-transparent hover:border-blue-500 cursor-pointer">
-                            <router-link to="/employer">
-                                For Employers
-                            </router-link>
-                        </span>
                     </div>
                 </div>
                 <!-- Large screen -->
@@ -50,19 +44,23 @@
                         </router-link>
                     </span>
                     <div class="md:ml-8 flex flex-col md:flex-row justify-end md:items-center">
-                        <span @click="modal = true;" class="px-2 py-2 border-b border-transparent hover:border-blue-500 w-auto cursor-pointer">Signin</span>
-                        <span class="hidden md:block">|</span>
-                        <span :class="{ 'border-b border-blue-500' : ($route.name === 'Employer') }" class=" px-2 py-2 border-b border-transparent hover:border-blue-500 cursor-pointer">
-                            <router-link to="/employer">
-                                For Employers
-                            </router-link>
-                        </span>
+                        <span v-if="!loggedIn" @click="modal = true;" class="px-2 py-2 border-b border-transparent hover:border-blue-500 w-auto cursor-pointer">Signin</span>
+                        <div v-else class="relative">
+                            <span @click="toggleUserNav();" :class="{ 'border-b border-blue-500' : ($route.name === 'Dashboard') }" class=" px-2 py-2 border-b border-transparent hover:border-blue-500 cursor-pointer">
+                                <router-link to="/dashboard">
+                                    Dashboard
+                                </router-link>
+                            </span>
+                            <div v-if="userNav" class="absolute right-0 top-0 mt-10 flex flex-col">
+                                <span @click="logout();" class="px-2 py-2 border-b border-transparent hover:border-blue-500 w-auto cursor-pointer">Logout</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <!--Login & register -->
-        <div v-if="modal" class="fixed  inset-0  rounded-lg flex flex-col  justify-center items-center rounded-lg z-20 ">
+        <div v-if="modal && !loggedIn" class="fixed  inset-0  rounded-lg flex flex-col  justify-center items-center rounded-lg z-20 ">
             <div @click="modal = false;" class="h-full w-full bg-gray-300">
             </div>
             <div class="absolute  bg-white left-0 right-0  mx-auto  max-w-xl shadow-lg rounded-lg p-6 z-30 ">
@@ -95,14 +93,21 @@ export default {
             modal: false,
             register: false,
             menu: false,
+            loggedIn: false,
+            userNav: false,
         }
     },
-    computed: {
-        currentRouteName() {
-            return this.$route.name;
-        }
+    mounted() {
+        this.loggedIn = this.$store.getters.getAuthenticatedUser;
     },
     methods: {
+        logout() {
+            this.$store.dispatch('logout');
+            this.loggedIn = false;
+        },
+        toggleUserNav() {
+            this.userNav = !this.userNav;
+        },
         toggleUserAuthenticationModal() {
             this.modal = !this.modal;
         },

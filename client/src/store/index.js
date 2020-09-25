@@ -15,26 +15,42 @@ export default createStore({
         },
         setToken(state) {
             state.token = localStorage.getItem('_token') || '';
+        },
+        logout(state) {
+            state.token = '';
+            state.isAuthenticated = false;
+
+            state.user = {};
+            localStorage.removeItem('_token');
         }
     },
     actions: { //Asynchronous Actions
         async getAndSetAuthenticatedUser(state) {
-            const res = await axios.get('http://localhost:8000/api/test', {
+            const res = await axios.get('http://localhost:8000/api/user', {
                 headers: {
                     'Accept': 'application/json',
-                    'Authorization': `Bearer ${state.token}`
+                    'Authorization': `Bearer ${localStorage.getItem('_token')}`
                 }
             });
-            // const res = await axios.get('http://localhost:8000/api/user', {
-            //     headers: {
-            //         'Accept': 'application/json'
-            //     }
-            // });
-            console.log(res);
+
             state.commit('setUserAsAuthenticated', res.data);
         },
         setToken(state) {
             state.commit('setToken');
+        },
+        logout(state) {
+            axios.post('http://localhost:8000/api/logout', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('_token')}`
+                }
+            }).then((res) => {
+                if (res.status === 200) {
+                    state.commit('logout');
+                }
+            }).catch(err => {
+                console.log(err);
+            });
         }
     },
     modules: {},

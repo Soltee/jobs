@@ -69,15 +69,16 @@ export default {
             }
             // this.$store.dispatch('getAndSetAuthenticatedUser');
             // this.loading = false;
-            axios.post(`http://127.0.0.1:8001/api/login`, data, {
+            axios.post(`http://localhost:8000/api/login`, data, {
                 headers: {
                     'Accept': 'application/json'
                 }
             }).then((res) => {
                 this.loading = false;
                 if (res.status === 200) {
+                    localStorage.setItem('_token', res.data.token);
                     this.$store.dispatch('getAndSetAuthenticatedUser');
-                    this.$store.dispatch('setToken');
+                    this.$route.push('/');
                 }
             }).catch((err) => {
                 console.log(err);

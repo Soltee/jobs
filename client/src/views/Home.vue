@@ -22,7 +22,7 @@ export default {
         }
     },
     mounted() {
-        this.loadJobs();
+        this.$store.dispatch('getAndSetAuthenticatedUser');
     },
     methods: {
         loadJobs() {

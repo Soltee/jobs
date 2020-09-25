@@ -36,7 +36,7 @@ class AuthController extends Controller
     	$data = $request->validate([
     		'is_employer'       => 'nullable|bool',
     		'name'      		=> 'required|string|min:2',
-    		'email'     		=> 'required|string|email',
+    		'email'     		=> 'required|string|email|unique:users',
     		'password'  		=> 'required|string|min:8|confirmed'
     	]);
 
@@ -47,12 +47,13 @@ class AuthController extends Controller
         $user->email       = $data['email'];
         $user->password    = bcrypt($data['password']);
         $user->is_employer = $data['is_employer'];
-        $user->name = $data['name'];
         $user->save();
 
+        $token = $user->createToken('unique-idntity&**()')->accessToken;
+
 		return  response([
-                        'status' => 'Ok!'
-                        'token'  =>  $user->createToken('unique-idntity&**()')->accessToken,
+                        'status' => 'Ok!',
+                        'token'  =>  $token,
                         'user'   => $user
                     ], 201);
     }
