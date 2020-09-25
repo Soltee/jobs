@@ -16,12 +16,12 @@
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
-                <div v-if="menu" class="absolute right-0 top-0 mt-10 md:hidden flex flex-col md:flex-row w-48  rounded  shadow  bg-gray-300  px-3 py-3 ">
-                    <span @click="menu = false;" :class="{ 'border-b border-blue-500' : ($route.name === 'Jobs') }" class=" md:mb-0 text-md py-2 border-b border-transparent hover:border-blue-500 cursor-pointer">
-                        <router-link to="/jobs">
+                <div v-if="menu" class="absolute right-0 top-0 mt-10 md:hidden flex flex-col md:flex-row w-48  rounded  shadow  bg-gray-300  px-3 py-3 z-20">
+                    <router-link to="/jobs">
+                        <span @click="menu = false;" :class="{ 'border-b border-blue-500' : ($route.name === 'Jobs') }" class=" md:mb-0 text-md py-2 border-b border-transparent hover:border-blue-500 cursor-pointer">
                             Find Jobs
-                        </router-link>
-                    </span>
+                        </span>
+                    </router-link>
                     <span @click="menu = false;" :class="{ 'border-b border-blue-500' : ($route.name === 'About') }" class="md:mb-0 text-md py-2 border-b border-transparent hover:border-blue-500 cursor-pointer md:ml-4">
                         <router-link to="/about">
                             About JobHunt

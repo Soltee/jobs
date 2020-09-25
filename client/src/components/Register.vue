@@ -1,6 +1,9 @@
 <template>
     <div class="">
-        <form @submit.prevent="loginUserregisterUser">
+        <div class="mb-2">
+            <span @click="isEmployer = true;">Employer</span>
+        </div>
+        <form @submit.prevent="registerUser">
             <div class="">
                 <div class="flex flex-col mb-6">
                     <label for="name" class="font-md mb-2">Name</label>
@@ -77,6 +80,7 @@ export default {
             emailErr: [],
             passwordErr: [],
             confirmErr: [],
+            isEmployer: false
         }
     },
     methods: {
@@ -87,19 +91,21 @@ export default {
                 name: this.name,
                 email: this.email,
                 password: this.password,
-                password_confirmation: this.confirm
+                password_confirmation: this.confirm,
+                is_employer: this.isEmployer
             }
             // this.$store.dispatch('getAndSetAuthenticatedUser');
             // this.loading = false;
-            axios.post(`http://127.0.0.1:8001/api/register`, data, {
+            axios.post(`http://127.0.0.1:8000/api/register`, data, {
                 headers: {
                     'Accept': 'application/json'
                 }
             }).then((res) => {
                 this.loading = false;
                 if (res.status === 200) {
-                    this.$store.dispatch('getAndSetAuthenticatedUser');
+                    localStorage.setItem('_token', res.data._token);
                     this.$store.dispatch('setToken');
+                    this.$store.dispatch('getAndSetAuthenticatedUser');
                 }
             }).catch((err) => {
                 console.log(err);

@@ -17,7 +17,22 @@ class JobController extends Controller
      */
     public function index()
     {
-        return Job::latest()->with('user')->paginate(10);
+        $search   = request()->keyword;
+        $from     = request()->from;
+        $to       = request()->to;
+
+        $latest   = Job::latest();
+        if($search){
+            $latest = $latest->where('name', 'LIKE', '%'.$search.'%');
+        }
+
+        if($from || $to){
+            $latest = $latest->whereBetween('salary', [$from, $to]);
+        }
+
+        return $latest->with('user')
+                        ->paginate(10)
+                        ->appends(request()->query());
     }
 
 
@@ -29,7 +44,24 @@ class JobController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name'           => 'required|string|min:2',
+            'description'    => 'required',
+            'salary'         => 'required|numeric',
+            'apply_before'   => 'required|date',
+            'tags'           => 'required|string'
+
+        ]);
+
+        $job = auth()->user()->jobs()->create([
+            'name'           => $data['name'],
+            'description'    => $data['description'],
+            'salary'         => $data['salary'],
+            'apply_before'   => $data['apply_before'],
+            'tags'           => $data['tags']
+        ]);
+        
+        return response(['job' => $job], 200);
     }
 
     /**
@@ -43,24 +75,7 @@ class JobController extends Controller
         return new JobResource($job);
     }
 
-    /**
-     * Search Job
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function search()
-    {
-        $search  = request()->keyword;
-        if($search){
-            return Job::where('name', 'LIKE', '%'.$search.'%')
-                        ->with('user')
-                        ->paginate(10)                    
-                        ->appends(request()->query());
-
-        }
-    }
-
+   
     /**
      * Update the specified resource in storage.
      *
@@ -70,7 +85,24 @@ class JobController extends Controller
      */
     public function update(Request $request, Job $job)
     {
-        //
+        $data = $request->validate([
+            'name'           => 'required|string|min:2',
+            'description'    => 'required',
+            'salary'         => 'required|numeric',
+            'apply_before'   => 'required|date',
+            'tags'           => 'required|string'
+
+        ]);
+
+        $job->update([
+            'name'           => $data['name'],
+            'description'    => $data['description'],
+            'salary'         => $data['salary'],
+            'apply_before'   => $data['apply_before'],
+            'tags'           => $data['tags']
+        ]);
+
+        return response(['job' => $job], 200);
     }
 
     /**
@@ -81,6 +113,7 @@ class JobController extends Controller
      */
     public function destroy(Job $job)
     {
-        //
+        $job->delete();
+        return response(['job' => $job], 204);
     }
 }

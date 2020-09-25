@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\User;
-use GuzzleHttp;
+use Auth;
 class AuthController extends Controller
 {
     /*login User*/
@@ -18,12 +18,14 @@ class AuthController extends Controller
     	]);
 
     	$user = User::where('email', $data['email'])->first();
+    	if(Auth::attempt($data)){
+
+    		return  reponse([
+    			'token' =>  $user->createToken('unique-idntity&**()')->accessToken,
+    			'user' => $user,
+    		], 200);
+        }
     	
-    	
-		return  reponse([
-			'body' =>  json_encode($response->json()),
-			'user' => $user,
-		], 200);
 	
     }
 
@@ -32,22 +34,34 @@ class AuthController extends Controller
     public function register(Request $request)
     {
     	$data = $request->validate([
-    		// 'is_employer'       => 'nullable|bool',
+    		'is_employer'       => 'nullable|bool',
     		'name'      		=> 'required|string|min:2',
     		'email'     		=> 'required|string|email',
     		'password'  		=> 'required|string|min:8|confirmed'
     	]);
 
-    	// $is_employer = ($data['is_employer']) ? true : false;
+    	$is_employer = ($data['is_employer']) ? true : false;
 
-		User::create([
-			// 'is_employer'       => $is_employer,
-			'name'      		=> $data['name'],
-			'email'     		=> $data['email'],
-			'password'  		=> $data['password']
-		]);
+		$user = new User;
+        $user->name        = $data['name'];
+        $user->email       = $data['email'];
+        $user->password    = bcrypt($data['password']);
+        $user->is_employer = $data['is_employer'];
+        $user->name = $data['name'];
+        $user->save();
 
-		return  response(['status' => 'Ok!'], 201);
+		return  response([
+                        'status' => 'Ok!'
+                        'token'  =>  $user->createToken('unique-idntity&**()')->accessToken,
+                        'user'   => $user
+                    ], 201);
+    }
+
+
+    /**Logout */
+    public function logout(Request $request){
+        $request->user()->token()->revoke();
+        return Auth::logout();
     }
 
 }

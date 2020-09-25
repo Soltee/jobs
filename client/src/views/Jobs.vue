@@ -1,17 +1,32 @@
 <template>
     <div class="relative">
-        <div class="mb-8 " @click="search=false;">
-            <div class="flex justify-center items-center">
+        <div class="mb-8 ">
+            <div class="flex  items-center">
                 <form @submit.prevent="">
-                    <div class="relative flex w-full">
-                        <svg @click="search = false; endpoint='http://127.0.0.1:8000/api/jobs'; loadJobs();" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="absolute left-0 top-0 mt-3 ml-2 w-8 h-8 text-red-600  cursor-pointer">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                        <input @keyup="search = true; loadJobs();" class="pl-12 pr-6 py-3 rounded-l text-lg border border-blue-500" v-model="keyword" />
-                        <button class="px-6 bg-blue-600 text-white hover:bg-blue-500 py-3 rounded-r text-lg" type="submit">
-                            Search
-                        </button>
+                    <div>
+                        <div class="flex flex-col md:flex-row items-center">
+                            <div class="flex flex-col ">
+                                <span class="text-lg px-3 py-2  rounded">Keyword</span>
+                                <div class="relative flex w-full">
+                                    <input @keyup="search = true; searchJobs();" class="pl-12 pr-6 py-3 rounded text-lg border border-blue-500" v-model="keyword" />
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:ml-3">
+                                <span class="text-lg px-3 py-2  rounded">Salary</span>
+                                <div class="relative flex w-full">
+                                    <input type="number" @keyup="search = true; searchJobs();" class="px-3 w-40 py-3 rounded text-lg border border-blue-500" v-model="from" />
+                                    <input type="number" @keyup="search = true; searchJobs();" class="ml-3 px-3 w-40 py-3 rounded text-lg border border-blue-500" v-model="to" />
+                                </div>
+                            </div>
+                            <div class="flex flex-col ml-3">
+                                <span class="text-lg text-transparent px-3 py-2  rounded">Clear</span>
+                                <button @click="resetAll();" class="px-6 bg-red-600 text-white hover:bg-red-500 py-3 rounded text-lg" type="button">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                        </div>
                     </div>
                 </form>
             </div>
@@ -19,7 +34,7 @@
         <div class="relative">
             <div class="mb-2 flex justify-center items-center">
                 {{ total }} jobs found
-                <span v-if="search">for {{ keyword }}.</span>
+                <span v-if="search"> for {{ keyword }}.</span>
             </div>
             <div class="flex flex-col">
                 <div v-if="search">
@@ -32,6 +47,11 @@
                             <p>
                                 {{ job.description.substring(0, 400)+"... .. ." }}
                             </p>
+                            <div class="mt-4">
+                                <span class="mr-2 px-2 py-2 bg-blue-400 text-white rounded" v-for="(tag, i) in job.tags.split(',')" :key="i">
+                                    {{ tag }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -45,12 +65,17 @@
                             <p>
                                 {{ job.description.substring(0, 400)+"... .. ." }}
                             </p>
+                            <div class="mt-4">
+                                <span class="mr-2 px-2 py-2 bg-blue-400 text-white rounded" v-for="(tag, i) in job.tags.split(',')" :key="i">
+                                    {{ tag }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="mt-3 flex flex-col items-center">
-                <div v-if="loading" class="absolute inset-0 z-40 bg-gray-300 flex justify-center items-center">
+                <div v-if="loading" class="z-40 bg-gray-300 flex justify-center items-center">
                     <div class="sk-cube-grid">
                         <div class="sk-cube sk-cube1"></div>
                         <div class="sk-cube sk-cube2"></div>
@@ -111,28 +136,25 @@ export default {
             singleJobLoading: false,
             search: false,
             keyword: '',
+            from: 0,
+            to: 0,
             jobsSearch: [],
             total: 0,
         }
     },
     mounted() {
-        this.loadJobs();
+        this.loadFromBackend();
         this.loadOnPageScrollAtBottom();
     },
     methods: {
-        loadJobs() {
+        searchJobs() {
+            this.jobsSearch = [];
+            this.endpoint = `http://localhost:8000/api/jobs?keyword=${this.keyword}&from=${this.from}&to=${this.to}`;
+
+            this.loadFromBackend();
+        },
+        loadFromBackend() {
             this.loading = true;
-
-            if (this.search && this.keyword !== '') {
-                if (!this.searchNextPage) {
-                    this.endpoint = `http://127.0.0.1:8000/api/jobs/search?keyword=${this.keyword}`;
-                } else {
-                    this.endpoint = this.searchNextPage;
-                }
-
-            } else {
-                this.search = false;
-            }
 
             axios.get(`${this.endpoint}`, {
                 headers: {
@@ -143,26 +165,26 @@ export default {
                 if (res.status === 200) {
                     if (this.search) {
 
-                        if (this.searchNextPage) {
+
+                        if (this.jobsSearch.length > 0) {
                             res.data.data.forEach((job) => {
                                 this.jobsSearch.push(job);
                             });
                         } else {
                             this.jobsSearch = res.data.data;
                         }
-                        this.searchNextPage = res.data.next_page_url;
-                        if (res.data.data.length < 1) {
-                            this.error = 'No job found.You must have mispelled.';
-                        }
                     } else {
                         res.data.data.forEach((job) => {
                             this.jobs.push(job);
                         });
 
-                        this.endpoint = res.data.next_page_url;
                     }
+                    if (res.data.data.length < 1) {
+                        this.error = 'No more jobs.';
+                    }
+                    this.endpoint = res.data.next_page_url;
+
                     this.total = res.data.total;
-                    console.log(this.endpoint);
                 }
             }).catch(err => {
                 this.loading = false;
@@ -172,21 +194,23 @@ export default {
             })
 
         },
-        searchJobs() {
-            if (this.search && this.keyword !== '') {
-                this.endpoint = `http://127.0.0.1:8000/api/jobs/search?keyword=${this.keyword}`;
-
-            } else {
-                this.search = false;
-            }
-        },
         loadOnPageScrollAtBottom() {
             window.onscroll = () => {
                 let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
                 if (bottomOfWindow && this.endpoint) {
-                    this.loadJobs();
+                    this.loadFromBackend();
                 }
             };
+        },
+        resetAll() {
+            this.search = false;
+            this.jobsSearch = [];
+            this.jobs = [];
+            this.keyword = '';
+            this.from = 0;
+            this.to = 0;
+            this.endpoint = 'http://localhost:8000/api/jobs';
+            this.loadFromBackend();
         },
         format(date) {
             return FormatDate(date);

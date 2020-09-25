@@ -24,11 +24,13 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/jobs', [JobController::class, 'index']);
-Route::get('/jobs/search', [JobController::class, 'search']);
 Route::middleware('auth:api')->group(function(){
+	Route::post('/logout', [AuthController::class, 'logout']);
 
-	Route::get('/test', function (Request $request) {
-	    return $request->user();
-	});
+	//Jobs
+	Route::post('/jobs', [JobController::class, 'store']);
+	Route::patch('/jobs/{job}', [JobController::class, 'update']);
+	Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
+
 	// Route::resource('jobs', [AuthController::class]);
 });
