@@ -9,24 +9,26 @@ use App\Models\User;
 use Auth;
 class AuthController extends Controller
 {
-    /*login User*/
-    public function login(Request $request)
+     /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-    	$data = $request->validate([
-    		'email'     => 'required|string|email',
-    		'password'  => 'required|string|min:8'
-    	]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
 
-    	$user = User::where('email', $data['email'])->first();
-    	if(Auth::attempt($data)){
+    /*login User*/
+    public function login()
+    {
+        $credentials = request(['email', 'password']);
 
-    		return  reponse([
-    			'token' =>  $user->createToken('unique-idntity&**()')->accessToken,
-    			'user' => $user,
-    		], 200);
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
-    	
-	
+
+        return $this->respondWithToken($token);
     }
 
 
@@ -58,11 +60,39 @@ class AuthController extends Controller
                     ], 201);
     }
 
+    /**
+     * Get the authenticated User.
+     */
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
+
+    /**
+     * Refresh a token.
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
 
     /**Logout */
-    public function logout(Request $request){
-        $request->user()->token()->revoke();
-        return Auth::logout();
+    public function logout(){
+        auth()->logout();
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    /**
+     * Get the token array structure.
+     * @param  string $token
+     */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token'   => $token,
+            'token_type'     => 'bearer',
+            'expires_in'     => auth()->factory()->getTTL() * 60
+        ]);
     }
 
 }

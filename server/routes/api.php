@@ -15,27 +15,21 @@ use App\Http\Controllers\Api\DashboardController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// middleware('auth:api')->
-Route::get('/user', function (Request $request) {
-    return $request->user();
-    return App\Models\User::latest()->first();
-});
+Route::get('/jobs', [JobController::class, 'index']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/jobs', [JobController::class, 'index']);
-
 Route::middleware('auth:api')->group(function(){
-	Route::post('/logout', [AuthController::class, 'logout']);
 
-	//Registeruser
-	Route::get('/user', function (Request $request) {
-	    return $request->user();
-	});
+	//Authenticated User
+	Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
+	Route::post('/logout', [AuthController::class, 'logout']);
 	
 	//Jobs
 	Route::get('/employer/jobs', [DashboardController::class, 'index']);
+
 	Route::post('/jobs', [JobController::class, 'store']);
 	Route::patch('/jobs/{job}', [JobController::class, 'update']);
 	Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
