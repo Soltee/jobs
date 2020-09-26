@@ -24,11 +24,17 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
+        $user        = User::where('email', $credentials['email'])->first();
+
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        return  response([
+                        'status' => 'Ok!',
+                        'token'  =>  $this->respondWithToken($token),
+                        'user'   => $user
+                    ], 200);
     }
 
 
@@ -51,11 +57,11 @@ class AuthController extends Controller
         $user->is_employer = $data['is_employer'];
         $user->save();
 
-        $token = $user->createToken('unique-idntity&**()')->accessToken;
+        $token = auth()->attempt([$data['email'], $data['password']]);
 
 		return  response([
                         'status' => 'Ok!',
-                        'token'  =>  $token,
+                        'token'  =>  $this->respondWithToken($token),
                         'user'   => $user
                     ], 201);
     }
@@ -91,7 +97,7 @@ class AuthController extends Controller
         return response()->json([
             'access_token'   => $token,
             'token_type'     => 'bearer',
-            'expires_in'     => auth()->factory()->getTTL() * 60
+            'expires_in'     => auth()->factory()->getTTL() * 120
         ]);
     }
 

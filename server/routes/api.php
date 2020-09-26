@@ -15,24 +15,24 @@ use App\Http\Controllers\Api\DashboardController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('/jobs', [JobController::class, 'index']);
+Route::get('jobs', [JobController::class, 'index']);
 
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function(){
 
 	//Authenticated User
 	Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);
-	Route::post('/logout', [AuthController::class, 'logout']);
+	Route::post('logout', [AuthController::class, 'logout']);
 	
 	//Jobs
-	Route::get('/employer/jobs', [DashboardController::class, 'index']);
+	Route::get('employer/jobs', [DashboardController::class, 'index']);
 
-	Route::post('/jobs', [JobController::class, 'store']);
-	Route::patch('/jobs/{job}', [JobController::class, 'update']);
-	Route::delete('/jobs/{job}', [JobController::class, 'destroy']);
+	Route::post('jobs', [JobController::class, 'store']);
+	Route::patch('jobs/{job}', [JobController::class, 'update']);
+	Route::delete('jobs/{job}', [JobController::class, 'destroy']);
 
 	// Route::resource('jobs', [AuthController::class]);
 });
